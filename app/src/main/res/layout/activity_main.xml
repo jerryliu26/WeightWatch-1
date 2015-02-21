@@ -1,0 +1,102 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your BMR"
+        android:id="@+id/tvBMR"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0.0"
+        android:id="@+id/tvBMR1"
+        android:layout_below="@+id/tvBMR"
+        android:layout_alignParentStart="true"
+        android:textSize="40sp"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Today's Calories"
+        android:textSize="30sp"
+        android:id="@+id/tvCal"
+        android:layout_below="@+id/tvBMR1"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:id="@+id/tvCal1"
+        android:layout_below="@+id/tvCal"
+        android:layout_alignParentStart="true"
+        android:textSize="40sp"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calories left"
+        android:id="@+id/tvLeft"
+        android:textSize="30sp"
+        android:layout_below="@+id/tvCal1"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvLeft1"
+        android:layout_below="@+id/tvLeft"
+        android:layout_alignParentStart="true"
+        android:gravity="center_horizontal"
+        android:textSize="40sp"
+        android:text="..." />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset"
+        android:id="@+id/btReset"
+        android:onClick="buttonClicked"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/btBMR" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:id="@+id/btAdd"
+        android:onClick="buttonClicked"
+        android:layout_alignTop="@+id/btShow"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="List"
+        android:id="@+id/btShow"
+
+        android:onClick="buttonClicked"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/btAdd" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BMR"
+        android:id="@+id/btBMR"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/btShow" />
+
+
+</RelativeLayout>
