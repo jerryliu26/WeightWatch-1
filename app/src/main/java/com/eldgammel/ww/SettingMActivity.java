@@ -7,27 +7,33 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
-
-public class AddFoodActivity extends ActionBarActivity {
+/**
+ * Created by sooksinyip on 2/22/2015 AD.
+ */
+public class SettingMActivity extends ActionBarActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_food);
+        setContentView(R.layout.activity_m_bmr);
     }
 
     public void addClicked(View v) {
-        EditText etName = (EditText)findViewById(R.id.etName);
-        EditText etCal = (EditText)findViewById(R.id.etCal);
-        EditText etAmount = (EditText)findViewById(R.id.etAmount);
+        EditText etWeight = (EditText)findViewById(R.id.etWeight);
+        EditText etHeight = (EditText)findViewById(R.id.etHeight);
+        EditText etAge = (EditText)findViewById(R.id.etAge);
+        RadioGroup rgGender = (RadioGroup)findViewById(R.id.rgGender);
 
-        String sName = etName.getText().toString();
-        String sCal = etCal.getText().toString();
-        String sAmount = etAmount.getText().toString();
+        String sWeight = etWeight.getText().toString();
+        String sHeight = etHeight.getText().toString();
+        String sAge = etAge.getText().toString();
 
-        if (sName.trim().length() == 0 || sCal.trim().length() == 0) {
+        if (sWeight.trim().length() == 0 || sHeight.trim().length() == 0 ||
+                sAge.trim().length() == 0) {
             Toast t = Toast.makeText(this.getApplicationContext(),
                     "All fields are required to be filled.",
                     Toast.LENGTH_SHORT);
@@ -35,9 +41,12 @@ public class AddFoodActivity extends ActionBarActivity {
         }
         else {
             Intent result = new Intent();
-            result.putExtra("fName", sName);
-            result.putExtra("cal", Integer.valueOf(sCal));
-            result.putExtra("amount", Integer.valueOf(sAmount));
+            result.putExtra("Weight", Integer.valueOf(sWeight));
+            result.putExtra("Height", Integer.valueOf(sHeight));
+            result.putExtra("Age", Integer.valueOf(sAge));
+            int rID = rgGender.getCheckedRadioButtonId();
+            String gender = ((RadioButton)findViewById(rID)).getText().toString();
+            result.putExtra("Gender", gender);
 
 
             this.setResult(RESULT_OK, result);

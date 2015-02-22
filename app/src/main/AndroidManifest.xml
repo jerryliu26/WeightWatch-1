@@ -17,13 +17,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.eldgammel.ww.AddFoodActivity"
+            android:name=".AddFoodActivity"
             android:label="@string/title_activity_add_food" >
         </activity>
         <activity
-            android:name="com.eldgammel.ww.ListFoodActivity"
+            android:name=".ListFoodActivity"
             android:label="@string/title_activity_list_food" >
         </activity>
+        <activity
+            android:name=".SettingMActivity"
+            android:label="@string/title_activity_m_setting" >
+        </activity>
+
 
     </application>
 

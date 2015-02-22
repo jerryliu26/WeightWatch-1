@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_add_food">Add A New Menu</string>
     <string name="title_activity_list_food">Food List</string>
+    <string name="title_activity_m_setting">Calculate your BMR</string>
 
 </resources>

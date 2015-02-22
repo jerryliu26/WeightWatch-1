@@ -18,7 +18,7 @@ public class ListFoodActivity extends ActionBarActivity
         implements AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener {
 
-    CourseDBHelper helper;
+    DBHelper helper;
     SimpleCursorAdapter adapter;
 
     @Override
@@ -26,10 +26,10 @@ public class ListFoodActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_food);
 
-        helper = new CourseDBHelper(this);
+        helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.rawQuery(
-                "SELECT _id, fName, (amount || ' x (' || credit || ' Calories)' ) g FROM course ORDER BY _id DESC;", null
+                "SELECT _id, fName, (amount || ' x (' || cal || ' Calories)' ) g FROM ww ORDER BY _id DESC;", null
         );
 
         adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, new String[] {"fName", "g"},
@@ -68,7 +68,7 @@ public class ListFoodActivity extends ActionBarActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view,
                             int position, long id) {
-        Log.d("course", id + " is clicked");
+        Log.d("food", id + " is clicked");
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ListFoodActivity extends ActionBarActivity
                                    int position, long id) {
         SQLiteDatabase db = helper.getWritableDatabase();
 
-        int n = db.delete("course",
+        int n = db.delete("ww",
                 "_id = ?",
                 new String[]{Long.toString(id)});
 
@@ -88,7 +88,7 @@ public class ListFoodActivity extends ActionBarActivity
 
             // retrieve a new collection of records
             Cursor cursor = db.rawQuery(
-                    "SELECT _id, fName, (amount || ' x (' || credit || ' Calories)' ) g FROM course ORDER BY _id DESC;", null
+                    "SELECT _id, fName, (amount || ' x (' || cal || ' Calories)' ) g FROM ww ORDER BY _id DESC;", null
             );
 
             // update the adapter

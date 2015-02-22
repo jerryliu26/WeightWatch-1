@@ -85,7 +85,6 @@
         android:layout_height="wrap_content"
         android:text="List"
         android:id="@+id/btShow"
-
         android:onClick="buttonClicked"
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@+id/btAdd" />
@@ -95,6 +94,7 @@
         android:layout_height="wrap_content"
         android:text="BMR"
         android:id="@+id/btBMR"
+        android:onClick="buttonClicked"
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@+id/btShow" />
 

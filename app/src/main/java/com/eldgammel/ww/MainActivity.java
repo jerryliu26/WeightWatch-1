@@ -15,7 +15,10 @@ import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
 
-    CourseDBHelper helper;
+    DBHelper helper;
+    public double weight, height, age;
+    public double bmr;
+    String gender = " " ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,22 +32,22 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
         // This method is called when this activity is put foreground.
 
-        helper = new CourseDBHelper(this);
+        helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT SUM(credit) cr, SUM(amount*credit) gp FROM course;", null);
+        Cursor cursor = db.rawQuery("SELECT SUM(amount*cal) calA FROM ww;", null);
         cursor.moveToFirst();
-        Double cr = cursor.getDouble(0);
 
-        Double gp = cursor.getDouble(1);
+        Double calA = cursor.getDouble(0);
 
-        double gpa = gp-cr;
+        Double cLeft = bmr-calA;
 
         TextView tvGP = (TextView) findViewById(R.id.tvBMR1);
-        tvGP.setText(Double.toString(gp));
+        tvGP.setText(Double.toString(bmr));
         TextView tvCR = (TextView) findViewById(R.id.tvCal1);
-        tvCR.setText(Double.toString(cr));
+        tvCR.setText(Double.toString(calA));
         TextView tvGPA = (TextView) findViewById(R.id.tvLeft1);
-        tvGPA.setText(Double.toString(gpa));
+        tvGPA.setText(Double.toString(cLeft));
+
 
 
     }
@@ -64,16 +67,22 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(i);
                 break;
 
+            case R.id.btBMR:
+                i = new Intent(this, SettingMActivity.class);
+                startActivityForResult(i, 55);
+                break;
+
             case R.id.btReset:
 
                 SQLiteDatabase db  = helper.getWritableDatabase();
-                int n_rows = db.delete("course", "", null);
+                int n_rows = db.delete("ww", "", null);
                 TextView tvGP = (TextView) findViewById(R.id.tvBMR1);
                 tvGP.setText("0.0");
                 TextView tvCR = (TextView) findViewById(R.id.tvCal1);
                 tvCR.setText("0.0");
                 TextView tvGPA = (TextView) findViewById(R.id.tvLeft1);
                 tvGPA.setText("0.0");
+                bmr = 0.0;
                 break;
         }
     }
@@ -83,23 +92,37 @@ public class MainActivity extends ActionBarActivity {
         if (requestCode == 88) {
             if (resultCode == RESULT_OK) {
                 String code = data.getStringExtra("fName");
-                int credit = data.getIntExtra("credit", 0);
+                int credit = data.getIntExtra("cal", 0);
                 int amount = data.getIntExtra("amount", 0);
 
 
-                helper = new CourseDBHelper(this.getApplicationContext());
+                helper = new DBHelper(this.getApplicationContext());
                 SQLiteDatabase db = helper.getWritableDatabase();
                 ContentValues r = new ContentValues();
                 r.put("fName", code);
-                r.put("credit", credit);
+                r.put("cal", credit);
                 r.put("amount", amount);
 
 
-                long new_id = db.insert("course", null, r);
+                long new_id = db.insert("ww", null, r);
+            }
+        }
+        if (requestCode == 55) {
+            if (resultCode == RESULT_OK) {
+                weight = data.getIntExtra("Weight", 0);
+                height = data.getIntExtra("Height", 0);
+                age = data.getIntExtra("Age", 0);
+                gender = data.getStringExtra("Gender");
+
+                if (gender.equals("Female")) {
+                    bmr = 655+(9.6*weight)+(1.8*height)-(4.7*age);
+                } else if (gender.equals("Male")){
+                    bmr = 66+(13.7*weight)+(5*height)-(6.8*age);
+                }
             }
         }
 
-        Log.d("course", "onActivityResult");
+        Log.d("ww", "onActivityResult");
     }
 
     @Override
