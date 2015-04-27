@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class  MainActivity extends ActionBarActivity {
 
     DBHelper helper;
     public double weight, height, age;

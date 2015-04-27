@@ -18,7 +18,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String sql = "CREATE TABLE ww (" +
                 "_id integer primary key autoincrement, " +
-                "fName text not null, " +             // course code
+                "fName text not null, " +
                 "cal int default 0, " +
                 "amount int default 0);";
 
