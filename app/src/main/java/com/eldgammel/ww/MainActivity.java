@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -11,6 +12,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class  MainActivity extends ActionBarActivity {
@@ -19,11 +43,24 @@ public class  MainActivity extends ActionBarActivity {
     public double weight, height, age;
     public double bmr;
     String gender = " " ;
+    public double calA;
+    public double cLeft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        LoadMessageTask task = new LoadMessageTask();
+        task.execute();
+
+        helper = new DBHelper(this);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT SUM(amount*cal) calA FROM ww;", null);
+        cursor.moveToFirst();
+        calA = cursor.getDouble(0);
+
+
 
     }
 
@@ -32,22 +69,17 @@ public class  MainActivity extends ActionBarActivity {
         super.onResume();
         // This method is called when this activity is put foreground.
 
+
         helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT SUM(amount*cal) calA FROM ww;", null);
         cursor.moveToFirst();
+        calA = cursor.getDouble(0);
 
-        Double calA = cursor.getDouble(0);
+        cLeft = bmr-calA;
 
-        Double cLeft = bmr-calA;
-
-        TextView tvGP = (TextView) findViewById(R.id.tvBMR1);
-        tvGP.setText(Double.toString(bmr));
-        TextView tvCR = (TextView) findViewById(R.id.tvCal1);
-        tvCR.setText(Double.toString(calA));
-        TextView tvGPA = (TextView) findViewById(R.id.tvLeft1);
-        tvGPA.setText(Double.toString(cLeft));
-
+        LoadMessageTask task = new LoadMessageTask();
+        task.execute();
 
 
     }
@@ -83,6 +115,9 @@ public class  MainActivity extends ActionBarActivity {
                 TextView tvGPA = (TextView) findViewById(R.id.tvLeft1);
                 tvGPA.setText("0.0");
                 bmr = 0.0;
+
+                PostMessageTask p = new PostMessageTask();
+                p.execute(0+"",0+"",0+"",gender);
                 break;
         }
     }
@@ -146,4 +181,139 @@ public class  MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    class LoadMessageTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            BufferedReader reader;
+            StringBuilder buffer = new StringBuilder();
+            String line;
+
+
+            try {
+
+                URL u = new URL("http://ict.siit.tu.ac.th/~u5522800069/get.php");
+                HttpURLConnection h = (HttpURLConnection)u.openConnection();
+                h.setRequestMethod("GET");
+                h.setDoInput(true);
+                h.connect();
+
+
+                int response = h.getResponseCode();
+                if (response == 200) {
+                    reader = new BufferedReader(new InputStreamReader(h.getInputStream()));
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line);
+                    }
+                    JSONObject json = new JSONObject(buffer.toString());
+                    Log.d("Test", json.toString());
+                    JSONArray user = json.getJSONArray("user");
+                    for (int i = 0; i < user.length(); i++) {
+                        weight = user.getJSONObject(i).getDouble("Weight");
+                        height = user.getJSONObject(i).getDouble("Height");
+                        age = user.getJSONObject(i).getDouble("Age");
+                        gender = user.getJSONObject(i).getString("Gender");
+
+
+                        Log.d("Test", weight + "");
+                        Log.d("Test", height + "");
+                        Log.d("Test", age + "");
+                        Log.d("Test", gender + "");
+                        if (weight != 0 && height != 0 && age!=0) {
+                            if (gender.equals("Female")) {
+                                bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age);
+                            } else if (gender.equals("Male")) {
+                                bmr = 66 + (13.7 * weight) + (5 * height) - (6.8 * age);
+                            }
+                        } else {
+                            bmr = 0;
+                        }
+                        Log.d("Test", bmr + "");
+                    }
+                }
+
+
+
+
+                return  true;
+            } catch (MalformedURLException e) {
+                Log.e("LoadMessageTask", "Invalid URL");
+            } catch (IOException e) {
+                Log.e("LoadMessageTask", "I/O Exception");
+            } catch (JSONException e) {
+                Log.e("LoadMessageTask", "Invalid JSON");
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+            cLeft = bmr-calA;
+            double cLeftRound = Math.round(cLeft *100.0) /100.0;
+
+            TextView tvGP = (TextView) findViewById(R.id.tvBMR1);
+            tvGP.setText(Double.toString(bmr));
+            TextView tvCR = (TextView) findViewById(R.id.tvCal1);
+            tvCR.setText(Double.toString(calA));
+            TextView tvGPA = (TextView) findViewById(R.id.tvLeft1);
+            tvGPA.setText(Double.toString(cLeftRound));
+
+
+        }
+    }
+
+    class PostMessageTask extends AsyncTask<String, Void, Boolean> {
+        String line;
+        StringBuilder buffer = new StringBuilder();
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            String sWeight = params[0];
+            String sHeight = params[1];
+            String sAge = params[2];
+            String gender = params[3];
+
+            HttpClient h = new DefaultHttpClient();
+            HttpPost p = new HttpPost("http://ict.siit.tu.ac.th/~u5522800069/connect.php");
+            try {
+                List<NameValuePair> values = new ArrayList<NameValuePair>();
+                values.add(new BasicNameValuePair("weight", sWeight));
+                values.add(new BasicNameValuePair("height", sHeight));
+                values.add(new BasicNameValuePair("age", sAge));
+                values.add(new BasicNameValuePair("gender", gender));
+
+                p.setEntity(new UrlEncodedFormEntity(values));
+
+
+
+                HttpResponse response = h.execute(p);
+
+
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(response.getEntity().getContent()));
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line);
+                }
+
+                Log.i("postData", response.getStatusLine().toString());
+            }
+            catch (UnsupportedEncodingException e) {
+                Log.e("Error", "Invalid encoding");
+            } catch (ClientProtocolException e) {
+                Log.e("Error", "Error in posting a message");
+            } catch (IOException e) {
+                Log.e("Error", "I/O Exception");
+            }
+            return true;
+        }
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+        }
+
+    }
 }
+
+
